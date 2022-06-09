@@ -3,12 +3,11 @@ package vtp2022.dayworkshop;
 
 import java.io.Console;
 import java.util.List;
-import javax.imageio.stream.IIOByteBuffer;
 
 
 public class Session {
 
-    public static final String LIST = "list";
+    public static final String LIST = "list";          //final can not change the variable
     public static final String CARTS = "carts";
     public static final String ADD = "add";
     public static final String DELETE = "delete";
@@ -18,11 +17,11 @@ public class Session {
     public static final String END = "end";
     public static final String LOGIN = "login";
 
-    private Respository respository;
+    private Repository repository;
     private Cart currCart;
 
     public Session(Repository repo){
-        this.respository = repo;
+        this.repository = repo;
     }
 
     public void start(){
@@ -48,31 +47,42 @@ public class Session {
                     int before = currCart.getContents().size();
                     for(int i=1; i<terms.length;i++){
                         currCart.add(terms[i]);
-                        int addedCount = currCart.getContents().size() - before;
-                        System.out.printf("Added %d item(s) to %s cart\n",
-                            addedCount, currCart.getUsername());
                     }
+                    int addedCount = currCart.getContents().size() - before;
+                    System.out.printf("Added %d item(s) to %s cart\n",
+                            addedCount, currCart.getUsername());
+                    
                     break;
                 case DELETE:
                     int idx = Integer.parseInt((terms[1]));
-                    String item = currCart.delete(idx);
+                    String item = currCart.delete(idx-1);
                     System.out.printf("Removed %s from %s's cart", item,currCart.getUsername());
                     break;
                 case LOAD: 
-                    //currCart = reps
+                    currCart = new Cart(terms[1]); // login into the user // load xinhai(terms[1])
+                    currCart = repository.load(currCart.getUsername());
+                    System.out.printf("Loaded %s shopping cart. There are %s item(s)\n", currCart.getUsername(),currCart.getContents().size());
+                //currCart = reps
                     //TO DO
                     break;
 
                 case SAVE:
                     //TO DO
+                    repository.save(currCart);
+                    System.out.println("Done !");
                     break;
 
                 case LOGIN:
                     currCart = new Cart(terms[1]);
+                    //repository.load(terms[1]);
+                    System.out.printf("%s login OK", terms[1]);
                     break;
 
                 case USERS:
-
+                    //TO DO repo need to have the getAllUsers method 
+                    List<String> allCarts = repository.getShoppingCarts();
+                    this.printList(allCarts);
+                    break;
                             
                 case END:
                     stop = true; 
